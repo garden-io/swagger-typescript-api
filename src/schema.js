@@ -46,7 +46,7 @@ const getTypeAlias = (rawSchema) => {
 
 const getInternalSchemaType = (schema) => {
   if (schema.enum) return "enum";
-  if (schema.properties) return "object";
+  if (!_.isEmpty(schema.properties)) return "object";
   if (schema.allOf || schema.oneOf || schema.anyOf || schema.not) return "complex";
 
   return "primitive";
