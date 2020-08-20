@@ -207,11 +207,14 @@ const schemaParsers = {
   },
   primitive: (schema, typeName) => {
     let contentType = null;
+    let typeIdentifier = "type";
     const { additionalProperties, type, description } = schema || {};
 
     if (type === "object" && _.isObject(additionalProperties)) {
       const fieldType = getInlineParseContent(additionalProperties);
-      contentType = `Record<string, ${fieldType}>`;
+      // The original version uses `Record<string, ${fieldType}>` but using an index signature better fits our usecase
+      contentType = `[key: string]: ${fieldType}`;
+      typeIdentifier = "interface";
     }
 
     if (_.isArray(type) && type.length) {
@@ -225,7 +228,7 @@ const schemaParsers = {
       $parsedSchema: true,
       schemaType: "primitive",
       type: "primitive",
-      typeIdentifier: "type",
+      typeIdentifier,
       name: typeName,
       description: formatDescription(description),
       // TODO: probably it should be refactored. `type === 'null'` is not flexible
